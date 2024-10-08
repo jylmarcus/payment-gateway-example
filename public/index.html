@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Gateway Example</title>
+</head>
+<body>
+    <form action="/submit" method="post" id="paymentForm">
+        <h2>Order</h2>
+        <label for="price">Price</label>
+        <input type="text" name="price" id="price" inputmode="numeric">
+        <label for="currency">Currency</label>
+        <select name="currency" id="currency">
+            <option value="usd">USD</option>
+            <option value="eur">EUR</option>
+            <option value="thb">THB</option>
+            <option value="hkd">HKD</option>
+            <option value="sgd">SGD</option>
+            <option value="aud">AUD</option>
+        </select>
+        <br>
+        <label for="name">Customer Full Name</label>
+        <input type="text" name="name" id="name">
+
+        <h2>Payment</h2>
+        <label for="cardholdername">Credit card holder name</label>
+        <input type="text" name="cardholdername" id="cardholdername">
+        <br>
+        <label for="cardnumber">Credit card number</label>
+        <input type="text" name="cardnumber" id="cardnumber" pattern="[0-9]*" inputmode="numeric">
+        <br>
+        <label for="expirydate">Expiry date (mm/yy)</label>
+        <input type="text" name="expirydate" id="expirydate">
+        <label for="cvv">CVV</label>
+        <input type="text" name="cvv" id="cvv" pattern="[0-9]*" inputmode="numeric">
+        <br>
+        <input type="submit" value="Submit">
+    </form>
+
+    <div id="submitStatus"></div>
+    <script src="/script.js"></script>
+</body>
+</html>
