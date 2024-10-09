@@ -17,13 +17,21 @@ export default class PaymentService {
         switch (gateway) {
             case 'paypal':
                 try {
-                    return await this.paypalService.processPayment(order, paymentDetails);
+                    const response = await this.paypalService.processPayment(order, paymentDetails);
+                    return response;
                 } catch (error) {
+                    console.error('PaymentService:processPaypalPayment', error);
                     throw error;
                 }
                 
             case 'braintree':
-                return this.braintreeService.processPayment(order, paymentDetails);
+                try {
+                    const response = await this.braintreeService.processPayment(order, paymentDetails);
+                    return {id: response.transaction.id, status: response.transaction.status};
+                } catch (error) {
+                    console.error('PaymentService:processbraintreePayment', error);
+                    throw error;
+                }
             default:
                 throw new Error('unknown gateway');
         }

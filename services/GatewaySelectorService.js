@@ -18,7 +18,7 @@ export default class GatewaySelectorService {
             throw new Error('AMEX only supports USD');
         }
 
-        if (['usd', 'eur', 'aud'].includes(currency)) {
+        if (['USD', 'EUR', 'AUD'].includes(currency)) {
             return this.gateways.paypal;
         } else {
             return this.gateways.braintree;

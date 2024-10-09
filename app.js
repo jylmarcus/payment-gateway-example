@@ -3,6 +3,7 @@ import path from 'path';
 import GatewaySelectorService from './services/GatewaySelectorService.js';
 import PaymentService from './services/PaymentService.js';
 import 'dotenv/config';
+import { validateFormInputs } from './middleware/validation.js';
 
 const app = express();
 
@@ -16,7 +17,7 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.post('/submit', async (req, res) => {
+app.post('/submit', validateFormInputs, async (req, res) => {
     const data = req;
 //   price: '100',
 //   currency: 'usd',
@@ -33,14 +34,16 @@ app.post('/submit', async (req, res) => {
         gateway = gatewaySelectorService.selectGateway(data.body.cardnumber, data.body.currency);
     } catch (error) {
         res.status(500).send(`<p>${error.message}</p>`);
+        return;
     }
 
     //process payment
     try {
         const response = await paymentService.processPayment(gateway, data.body);
-        res.status(200).send(`<p>Order ID: ${response.id}</p><p>Status: ${response.status}</p><p>Payment source: ${JSON.stringify(response.payment_source)}</p>`)
+        res.status(200).send(`<p>Order ID: ${response.id}</p><p>Status: ${response.status}</p><p>Gateway: ${gateway}</p>`)
     } catch (error) {
         res.status(500).send(`<p>${error.message}</p>`);
+        return;
     }
 
 });

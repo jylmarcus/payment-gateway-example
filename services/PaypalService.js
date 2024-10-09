@@ -1,23 +1,24 @@
-import fetch from 'node-fetch';
-
 export default class PaypalService {
 
     async processPayment(order, paymentDetails) {
         let orderId, status;
         try {
-            ({orderId, status} = await this.createOrder(order, paymentDetails));
+            const createdOrder = await this.createOrder(order, paymentDetails);
+            orderId = createdOrder.jsonResponse.id;
+            status = createdOrder.jsonResponse.status;
         } catch (error) {
+            console.error(error);
             throw new Error('Error creating order', error);
         }
-        
-        let response;
-        try {
-            response = await this.captureOrder(orderId);
-        } catch (error) {
-            throw new Error('Error capturing order', error);
-        } 
-
-        return await response.json();
+        // let response;
+        // try {
+        //     response = await this.captureOrder(orderId);
+        // } catch (error) {
+        //     console.error(error);
+        //     throw new Error('Error capturing order', error);
+        // } 
+        // console.log(JSON.stringify(response));
+        return {id: orderId, status};
     }
 
     async createOrder(order, paymentDetails) {
@@ -27,14 +28,14 @@ export default class PaypalService {
             purchase_units: [{
                 amount: {
                     currency_code: order.currency,
-                    value: order.price
+                    value: order.price,
                 }
             }],
             payment_source: {
                 card: {
                     name: paymentDetails.cardholdername,
                     number: paymentDetails.cardnumber,
-                    expiry: `${paymentDetails.expiryMonth}/${paymentDetails.expiryYear}`,
+                    expiry: `${paymentDetails.expiryYear}-${paymentDetails.expiryMonth}`,
                     security_code: paymentDetails.cvv
                 }
             }
@@ -44,6 +45,7 @@ export default class PaypalService {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'PayPal-Request-Id': Math.random().toPrecision(12).toString(),
                 'Authorization': `Bearer ${accessToken}`
             },
             body: JSON.stringify(payload)
@@ -62,12 +64,13 @@ export default class PaypalService {
             }
         });
 
+        //console.log('captureOrderResponse', response);
         return this.handleResponse(response);
     }
 
     async generateAccessToken() {
         try {
-            const auth = Buffer.from(proccess.env.PAYPAL_CLIENT_ID + ':' + process.env.PAYPAL_CLIENT_SECRET).toString('base64');
+            const auth = Buffer.from(process.env.PAYPAL_CLIENT_ID + ':' + process.env.PAYPAL_SECRET_KEY).toString('base64');
             const response = await fetch(`${process.env.PAYPAL_API_URL}/v1/oauth2/token`, {
                 method: 'POST',
                 headers: {
@@ -80,6 +83,7 @@ export default class PaypalService {
             const data = await response.json();
             return data.access_token;
         } catch (error) {
+            console.error(error);
             throw new Error("Failed to generate access token: ", error);
         }
     }

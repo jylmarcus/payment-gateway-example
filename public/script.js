@@ -23,7 +23,8 @@ document.getElementById('paymentForm').addEventListener('submit', async(e) => {
             const responseBody = await response.text();
             document.getElementById('submitStatus').innerHTML = responseBody;
         } else {
-            
+            const responseBody = await response.text();
+            document.getElementById('submitStatus').innerHTML = responseBody;
         }
     } catch (error) {
         console.error('Error: ', error);
