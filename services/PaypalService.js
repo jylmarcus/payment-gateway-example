@@ -1,11 +1,11 @@
+import config from'../config';
+
 export default class PaypalService {
 
     async processPayment(order, paymentDetails) {
-        let orderId, status;
         try {
             const createdOrder = await this.createOrder(order, paymentDetails);
-            orderId = createdOrder.jsonResponse.id;
-            status = createdOrder.jsonResponse.status;
+            return createdOrder;
         } catch (error) {
             console.error(error);
             throw new Error('Error creating order', error);
@@ -18,7 +18,6 @@ export default class PaypalService {
         //     throw new Error('Error capturing order', error);
         // } 
         // console.log(JSON.stringify(response));
-        return {id: orderId, status};
     }
 
     async createOrder(order, paymentDetails) {
@@ -41,7 +40,7 @@ export default class PaypalService {
             }
         }
 
-        const response = await fetch(`${process.env.PAYPAL_API_URL}/v2/checkout/orders`, {
+        const response = await fetch(`${config.paypalKeys.apiURL}/v2/checkout/orders`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -54,24 +53,25 @@ export default class PaypalService {
         return this.handleResponse(response);
     }
 
-    async captureOrder(orderId) {
-        const accessToken = await this.generateAccessToken();
-        const response = await fetch(`${process.env.PAYPAL_API_URL}/v2/checkout/orders/${orderId}/capture`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${accessToken}`
-            }
-        });
+    // No longer needed
+    // async captureOrder(orderId) {
+    //     const accessToken = await this.generateAccessToken();
+    //     const response = await fetch(`${process.env.PAYPAL_API_URL}/v2/checkout/orders/${orderId}/capture`, {
+    //         method: 'POST',
+    //         headers: {
+    //             'Content-Type': 'application/json',
+    //             'Authorization': `Bearer ${accessToken}`
+    //         }
+    //     });
 
-        //console.log('captureOrderResponse', response);
-        return this.handleResponse(response);
-    }
+    //     //console.log('captureOrderResponse', response);
+    //     return this.handleResponse(response);
+    // }
 
     async generateAccessToken() {
         try {
-            const auth = Buffer.from(process.env.PAYPAL_CLIENT_ID + ':' + process.env.PAYPAL_SECRET_KEY).toString('base64');
-            const response = await fetch(`${process.env.PAYPAL_API_URL}/v1/oauth2/token`, {
+            const auth = Buffer.from(config.paypalKeys.clientId + ':' + config.paypalKeys.secretKey).toString('base64');
+            const response = await fetch(`${config.paypalKeys.apiURL}/v1/oauth2/token`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Basic ${auth}`,

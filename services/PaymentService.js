@@ -1,10 +1,12 @@
 import PaypalService from './PaypalService.js';
 import BraintreeService from './BraintreeService.js';
+import OrderRepository from '../repository/OrderRepository.js';
 
 export default class PaymentService {
     constructor() {
         this.paypalService = new PaypalService();
         this.braintreeService = new BraintreeService();
+        this.orderRepository = new OrderRepository();
     }
 
     async processPayment(gateway, data) {
@@ -18,7 +20,8 @@ export default class PaymentService {
             case 'paypal':
                 try {
                     const response = await this.paypalService.processPayment(order, paymentDetails);
-                    return response;
+                    await this.orderRepository.saveOrder(response.jsonResponse.id,order, paymentDetails, response);
+                    return{id:response.jsonResponse.id, status: response.jsonResponse.status};
                 } catch (error) {
                     console.error('PaymentService:processPaypalPayment', error);
                     throw error;
@@ -27,6 +30,7 @@ export default class PaymentService {
             case 'braintree':
                 try {
                     const response = await this.braintreeService.processPayment(order, paymentDetails);
+                    await this.orderRepository.saveOrder(response.transaction.id, order, paymentDetails, response);
                     return {id: response.transaction.id, status: response.transaction.status};
                 } catch (error) {
                     console.error('PaymentService:processbraintreePayment', error);

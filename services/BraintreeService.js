@@ -1,12 +1,13 @@
 import braintree from "braintree";
+import config from "../config";
 
 export default class BraintreeService {
     constructor() {
         this.gateway = new braintree.BraintreeGateway({
             environment: braintree.Environment.Sandbox,
-            merchantId: process.env.BRAINTREE_MERCHANT_ID,
-            publicKey: process.env.BRAINTREE_PUBLIC_KEY,
-            privateKey: process.env.BRAINTREE_SECRET_KEY
+            merchantId: config.braintreeKeys.merchantId,
+            publicKey: config.braintreeKeys.publicKey,
+            privateKey: config.braintreeKeys.secretKey
         });
     }
 
