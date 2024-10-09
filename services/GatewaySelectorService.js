@@ -1,4 +1,6 @@
-class GatewaySelectorService {
+import { getCardIssuer } from '../utility/cardUtils.js';
+
+export default class GatewaySelectorService {
     constructor() {
         this.gateways = {
             paypal: 'paypal',
@@ -25,5 +27,3 @@ class GatewaySelectorService {
         }
     }
 }
-
-module.exports = GatewaySelectorService;
