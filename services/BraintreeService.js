@@ -21,6 +21,9 @@ export default class BraintreeService {
                     expirationMonth: paymentDetails.expiryMonth,
                     expirationYear: paymentDetails.expiryYear,
                     cvv: paymentDetails.cvv
+                },
+                options: {
+                    submitForSettlement: true
                 }
             });
             return await response;

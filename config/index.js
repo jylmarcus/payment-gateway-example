@@ -2,7 +2,7 @@ import 'dotenv/config';
 
 export default {
     paypalKeys: {
-        apiUrl: process.env.PAYPAL_API_URL,
+        apiURL: process.env.PAYPAL_API_URL,
         clientId: process.env.PAYPAL_CLIENT_ID,
         secretKey: process.env.PAYPAL_SECRET_KEY,
     },
