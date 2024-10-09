@@ -7,7 +7,7 @@ export default class PaypalService {
             const createdOrder = await this.createOrder(order, paymentDetails);
             return createdOrder;
         } catch (error) {
-            console.error(error);
+            console.error('PaypalService:createOrder', error);
             throw new Error('Error creating order', error);
         }
         // let response;

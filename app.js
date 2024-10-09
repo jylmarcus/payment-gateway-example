@@ -19,21 +19,13 @@ app.get('/', (req, res) => {
 
 app.post('/submit', validateFormInputs, async (req, res) => {
     const data = req;
-//   price: '100',
-//   currency: 'usd',
-//   name: 'asdf',
-//   cardholdername: 'asdf',
-//   cardnumber: '1234',
-//   expirydate: '10/25',
-//   cvv: '555'
-    console.log(data.body);
 
     //select payment gateway
     let gateway;
     try {
         gateway = gatewaySelectorService.selectGateway(data.body.cardnumber, data.body.currency);
     } catch (error) {
-        res.status(500).send(`<p>${error.message}</p>`);
+        res.status(400).send(`<p>${error.message}</p>`);
         return;
     }
 
@@ -42,7 +34,7 @@ app.post('/submit', validateFormInputs, async (req, res) => {
         const response = await paymentService.processPayment(gateway, data.body);
         res.status(200).send(`<p>Order ID: ${response.id}</p><p>Status: ${response.status}</p><p>Gateway: ${gateway}</p>`)
     } catch (error) {
-        res.status(500).send(`<p>${error.message}</p>`);
+        res.status(400).send(`<p>${error.message}</p>`);
         return;
     }
 
