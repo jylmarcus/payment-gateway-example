@@ -7,14 +7,21 @@ export default class PaymentService {
         this.braintreeService = new BraintreeService();
     }
 
-    processPayment(gateway, data) {
+    async processPayment(gateway, data) {
         const { price, currency, name, cardholdername, cardnumber, expirydate, cvv } = data;
         const order = { price, currency, name };
-        const paymentDetails = { cardholdername, cardnumber, expirydate, cvv };
+        let [expiryMonth, expiryYear] = expirydate.split('/');
+        expiryYear = `20${expiryYear}`;
+        const paymentDetails = { cardholdername, cardnumber, expiryMonth, expiryYear, cvv };
         
         switch (gateway) {
             case 'paypal':
-                return this.paypalService.processPayment(order, paymentDetails);
+                try {
+                    return await this.paypalService.processPayment(order, paymentDetails);
+                } catch (error) {
+                    throw error;
+                }
+                
             case 'braintree':
                 return this.braintreeService.processPayment(order, paymentDetails);
             default:

@@ -15,12 +15,10 @@ export default class GatewaySelectorService {
         }
 
         if (cardIssuer === 'amex' && currency !== 'USD') {
-            throw new Error('amex only supports USD');
+            throw new Error('AMEX only supports USD');
         }
 
-        if(cardIssuer === 'amex') {
-            return this.gateways.paypal;
-        } else if (['usd', 'eur', 'aud'].includes(currency)) {
+        if (['usd', 'eur', 'aud'].includes(currency)) {
             return this.gateways.paypal;
         } else {
             return this.gateways.braintree;
